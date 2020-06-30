@@ -402,13 +402,18 @@ df_week = pd.DataFrame(week_data) #Dataframe for current week metrics
 print(df_week)
 
 #Leo las metricas iniciales
-df_init = pd.read_excel(path_init) #Dataframe for Initial Metrics
+df_init = pd.read_excel(path_init,index_col = 'ITEM') #Dataframe for Initial Metrics
 
 #Creo nuevo dataframe con nueva columna de current week data
 #df_metrics = ((df_init.join(df_week)).set_index('ITEM')).astype(object) #astype(object) te convierte al que se parece el objeto
+#Si el join no sirve quita el index_col arriba
 
 #Mando el dataframe al archivo original para añadir la nueva columna
 #df_metrics.to_excel(path_init) #Te manda la columna del week a las metricas acumuladas
+
+#Ahora con ese nuevo archivo actualizado puedo manipular la data como quiera
+
+
 
 #Agarro las ultimas n columnas para hacer el reporte
 # df_metrics_email = df_metrics[df_metrics.columns[-5:]]
