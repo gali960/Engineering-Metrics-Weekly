@@ -1,6 +1,6 @@
 import pandas as pd
 from datetime import datetime
-import win32com.client
+import win32com.client as win32
 import xlsxwriter
 import os
 
@@ -399,7 +399,7 @@ except:
 metrics = [pma_ai, pma_str, sdocs_emb_ai, sdocs_emb_str, sdocs_ng_ai, sdocs_ng_str, sdocs_max_ai, sdocs_max_str, sdocs_others_ai, sdocs_others_str, sdocs_comp_ai, sdocs_comp_str, ual_ecra_ai, ual_ecra_str, er_ai, er_str, alerts_ai, alerts_str, c_ck_cases, c_ck_time, aog_cases, aog_time, opp_placards, edocs_ai, edocs_str]
 week_data = {f'{today_week}': metrics}
 df_week = pd.DataFrame(week_data) #Dataframe for current week metrics
-print(df_week)
+
 
 #Leo las metricas iniciales
 df_init = pd.read_excel(path_init,index_col = 'ITEM') #Dataframe for Initial Metrics
@@ -412,6 +412,24 @@ df_init = pd.read_excel(path_init,index_col = 'ITEM') #Dataframe for Initial Met
 #df_metrics.to_excel(path_init) #Te manda la columna del week a las metricas acumuladas
 
 #Ahora con ese nuevo archivo actualizado puedo manipular la data como quiera
+
+html_table = df_init.to_html(col_space = 70,justify = 'center')
+css = '''<style>
+table {text-align: center;}
+table thead th {text-align: center;}
+</style>'''
+email_table = css + html_table
+print(css+html_table)
+
+outlook = win32.gencache.EnsureDispatch('Outlook.Application')
+mail_item = outlook.CreateItem(0)
+mail_item.To = 'ggalina@copaair.com'
+
+#  modify the mail body as per need
+
+body = "<h1>Dear yankita</h1>This is the Table <br><br>   "+email_table
+mail_item.HTMLBody = (body)
+mail_item.Send()
 
 
 
