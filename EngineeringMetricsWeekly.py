@@ -397,7 +397,7 @@ except:
 
 #Setting up current week series
 metrics = [pma_ai, pma_str, sdocs_emb_ai, sdocs_emb_str, sdocs_ng_ai, sdocs_ng_str, sdocs_max_ai, sdocs_max_str, sdocs_others_ai, sdocs_others_str, sdocs_comp_ai, sdocs_comp_str, ual_ecra_ai, ual_ecra_str, er_ai, er_str, alerts_ai, alerts_str, c_ck_cases, c_ck_time, aog_cases, aog_time, opp_placards, edocs_ai, edocs_str]
-week_data = {f'{today_week}': metrics}
+week_data = {f'Week {today_week}': metrics}
 df_week = pd.DataFrame(week_data) #Dataframe for current week metrics
 
 
@@ -432,10 +432,7 @@ email_table = css + html_table
 outlook = win32.gencache.EnsureDispatch('Outlook.Application')
 mail_item = outlook.CreateItem(0)
 mail_item.To = 'ggalina@copaair.com'
-
-#  modify the mail body as per need
-
-body = 'Good morning, these are the metrics'+email_table
+body = 'A continuación data compilada de los pendientes del departamento de ingeniería de ATA por área (AI: Aviónica, Sistemas, Interiores y STR: Estructuras y Motores):'+ '<br>' + '<br>'  + email_table
 mail_item.HTMLBody = (body)
 mail_item.Send()
 
