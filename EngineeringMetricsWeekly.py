@@ -395,25 +395,27 @@ try:
 except:
     mp_comp = 0
 
-#Setting up initial metrics dataframe
+#Setting up current week series
 metrics = [pma_ai, pma_str, sdocs_emb_ai, sdocs_emb_str, sdocs_ng_ai, sdocs_ng_str, sdocs_max_ai, sdocs_max_str, sdocs_others_ai, sdocs_others_str, sdocs_comp_ai, sdocs_comp_str, ual_ecra_ai, ual_ecra_str, er_ai, er_str, alerts_ai, alerts_str, c_ck_cases, c_ck_time, aog_cases, aog_time, opp_placards, edocs_ai, edocs_str]
 week_data = {f'{today_week}': metrics}
-df_init = pd.read_excel(path_init) #Dataframe for Initial Metrics
 df_week = pd.DataFrame(week_data) #Dataframe for current week metrics
-df_metrics = ((df_init.join(df_week)).set_index('ITEM')).astype(object)
-#astype(object) te convierte al que se parece el objeto
-# print(df_metrics)
-df_metrics.to_excel(path_init)
+print(df_week)
 
+#Leo las metricas iniciales
+df_init = pd.read_excel(path_init) #Dataframe for Initial Metrics
 
-df_metrics_email = df_metrics[df_metrics.columns[-5:]]
+#Creo nuevo dataframe con nueva columna de current week data
+#df_metrics = ((df_init.join(df_week)).set_index('ITEM')).astype(object) #astype(object) te convierte al que se parece el objeto
+
+#Mando el dataframe al archivo original para añadir la nueva columna
+#df_metrics.to_excel(path_init) #Te manda la columna del week a las metricas acumuladas
+
+#Agarro las ultimas n columnas para hacer el reporte
+# df_metrics_email = df_metrics[df_metrics.columns[-5:]]
 # print(df_metrics_email)
 
 #Source doc sale beby orque usa los de JA, pendiente que se 
 #reasigne
-#1. Leo init metrics
-#2. Añado nueva columna
-#3. Guardo como init metrics
-#4. Agaroo las ultimas n columnas de init metrics
+#Preguntar cuantas n columns hay que agarrar, cómo cambió la logica?
 
 
