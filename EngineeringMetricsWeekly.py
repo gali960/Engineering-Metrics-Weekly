@@ -14,8 +14,9 @@ today = datetime.today().strftime('%d-%b-%y')
 today_week = datetime.today().isocalendar()[1]
 opp_placards = 0
 
-#Setting Sharpeoint excel lists paths
+#Setting Sharpeoint excel lists paths and initial metrics (base)
 path_sp = r'C:/Users/ggalina/Engineering Metrics/Sharepoint Data.xlsx'
+path_init = r'C:/Users/ggalina/Engineering Metrics/Initial Metrics.xlsx'
 
 #Refreshing Data Sources (PON TODO EN UN EXCEL EN VARIOS SHEETS, MEJOR ASI!)
 # xlapp = win32com.client.DispatchEx("Excel.Application")
@@ -426,7 +427,7 @@ df_metrics = ((df_init.join(df_week)).set_index('ITEM')).astype(object) #astype(
 #Si el join no sirve quita el index_col arriba
 
 #Mando el dataframe al archivo original para añadir la nueva columna
-#df_metrics.to_excel(path_init) #Te manda la columna del week a las metricas acumuladas
+df_metrics.to_excel(path_init) 
 
 df_metrics_email = df_metrics[df_metrics.columns[-5:]]
 
