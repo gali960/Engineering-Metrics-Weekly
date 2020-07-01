@@ -395,6 +395,31 @@ try:
 except:
     mp_comp = 0
 
+#Setting row/column values
+amoc = [as_amoc, cb_amoc, da_amoc, gg_amoc, 1, jh_amoc, jv_amoc, kdc_amoc, mp_amoc]
+emb = [as_emb, cb_emb, da_emb, gg_emb, 1, jh_emb, jv_emb, kdc_emb, mp_emb]
+maxl = [as_max, cb_max, da_max, gg_max, 1, jh_max, jv_max, kdc_max, mp_max]
+ng = [as_ng, cb_ng, da_max, gg_ng, 1, jh_ng, jv_ng, kdc_ng, mp_ng]
+saib = [as_saib, cb_saib, da_saib, gg_saib, 1, jh_saib, jv_saib, kdc_saib, mp_saib]
+sl = [as_sl, cb_sl, da_sl, gg_sl, 1, jh_sl, jv_sl, kdc_sl, mp_sl]
+comp = [as_comp, cb_comp, da_comp, gg_comp, 1, jh_comp, jv_comp, kdc_comp, mp_comp]
+
+#Calculating totals per Engineer
+as_total = as_amoc + as_emb + as_max + as_ng + as_saib + as_sl + as_comp
+cb_total = cb_amoc + cb_emb + cb_max + cb_ng + cb_saib + cb_sl + cb_comp
+da_total = da_amoc + da_emb + da_max + da_ng + da_saib + da_sl + da_comp
+gg_total = gg_amoc + gg_emb + gg_max + gg_ng + gg_saib + gg_sl + gg_comp
+cc_total = 0
+jh_total = jh_amoc + jh_emb + jh_max + jh_ng + jh_saib + jh_sl + jh_comp
+jv_total = jv_amoc + jv_emb + jv_max + jv_ng + jv_saib + jv_sl + jv_comp
+kdc_total = kdc_amoc + kdc_emb + kdc_max + kdc_ng + kdc_saib + kdc_sl + kdc_comp
+mp_total = mp_amoc + mp_emb + mp_max + mp_ng + mp_saib + mp_sl + mp_comp
+
+total = [as_total, cb_total, da_total, gg_total, cc_total, jh_total, jv_total, kdc_total, mp_total]
+
+#Setting indices for M2 dataframe
+m2_index = {0:'Arturo Sucre', 1: 'Cesar Barroso', 2: 'Diannette Alvarado', 3: 'Giancarlo Galina',4:'Carlos Castillo', 5: 'Jose Henry Icaza', 6:'Jose Valdes', 7: 'Karla Del Cid', 8:'Monique Peregrina'}
+
 #Setting up current week series
 metrics = [pma_ai, pma_str, sdocs_emb_ai, sdocs_emb_str, sdocs_ng_ai, sdocs_ng_str, sdocs_max_ai, sdocs_max_str, sdocs_others_ai, sdocs_others_str, sdocs_comp_ai, sdocs_comp_str, ual_ecra_ai, ual_ecra_str, er_ai, er_str, alerts_ai, alerts_str, c_ck_cases, c_ck_time, aog_cases, aog_time, opp_placards, edocs_ai, edocs_str]
 week_data = {f'Week {today_week}': metrics}
@@ -416,31 +441,30 @@ df_metrics_email = df_metrics[df_metrics.columns[-5:]]
 
 #Ahora con ese nuevo archivo actualizado puedo manipular la data como quiera
 
-html_table = df_metrics_email.to_html(col_space = 70,table_id = 'Metrics')
-css = '''<style>
-table {text-align: center;}
-table thead th {text-align: center;}
-table, th, td { border: 1px solid black;}
-table {border-collapse: collapse}
-th, td {padding: 9px}
-table {font-family: verdana}
-table {font-size: 12}
-</style>'''
-email_table = css + html_table
+#Setting up email send
+# html_table = df_metrics_email.to_html(col_space = 70,table_id = 'Metrics')
+# css = '''<style>
+# table {text-align: center;}
+# table thead th {text-align: center;}
+# table, th, td { border: 1px solid black;}
+# table {border-collapse: collapse}
+# th, td {padding: 9px}
+# table {font-family: verdana}
+# table {font-size: 12}
+# </style>'''
+# email_table = css + html_table
+# outlook = win32.gencache.EnsureDispatch('Outlook.Application')
+# mail_item = outlook.CreateItem(0)
+# mail_item.To = 'ggalina@copaair.com'
+# body = 'A continuación data compilada de los pendientes del departamento de ingeniería de ATA por área (AI: Aviónica, Sistemas, Interiores y STR: Estructuras y Motores):'+ '<br>' + '<br>'  + email_table
+# mail_item.HTMLBody = (body)
+# mail_item.Send()
 
 
-outlook = win32.gencache.EnsureDispatch('Outlook.Application')
-mail_item = outlook.CreateItem(0)
-mail_item.To = 'ggalina@copaair.com'
-body = 'A continuación data compilada de los pendientes del departamento de ingeniería de ATA por área (AI: Aviónica, Sistemas, Interiores y STR: Estructuras y Motores):'+ '<br>' + '<br>'  + email_table
-mail_item.HTMLBody = (body)
-mail_item.Send()
-
-
-
-#Agarro las ultimas n columnas para hacer el reporte
-# df_metrics_email = df_metrics[df_metrics.columns[-5:]]
-# print(df_metrics_email)
+m2 = {'AMOC 737': amoc, 'EMB': emb, 'MAX': maxl, 'NG':ng, 'SAIB':saib, 'SL737': sl, 'COMP': comp, 'TOTAL':total}
+df_m2 = pd.DataFrame.from_dict(m2)
+df_m2.rename(index = m2_index, inplace= True)
+print(df_m2)
 
 #Source doc sale beby orque usa los de JA, pendiente que se 
 #reasigne
