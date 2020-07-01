@@ -12,6 +12,8 @@ import os
 
 today = datetime.today().strftime('%d-%b-%y')
 today_week = datetime.today().isocalendar()[1]
+quarter = ((datetime.today().month-1)//3)+1
+
 opp_placards = 0
 
 #Setting Sharpeoint excel lists paths and initial metrics (base)
@@ -19,12 +21,12 @@ path_sp = r'C:/Users/ggalina/Engineering Metrics/Sharepoint Data.xlsx'
 path_init = r'C:/Users/ggalina/Engineering Metrics/Initial Metrics.xlsx'
 
 #Refreshing Data Sources (PON TODO EN UN EXCEL EN VARIOS SHEETS, MEJOR ASI!)
-# xlapp = win32com.client.DispatchEx("Excel.Application")
-# wb = xlapp.Workbooks.Open(path_sdocs)
-# wb.RefreshAll()
-# xlapp.CalculateUntilAsyncQueriesDone()
-# wb.Save()
-# xlapp.Quit()
+xlapp = win32.DispatchEx("Excel.Application")
+wb = xlapp.Workbooks.Open(path_sp)
+wb.RefreshAll()
+xlapp.CalculateUntilAsyncQueriesDone()
+wb.Save()
+xlapp.Quit()
 
 #Setting up dataframes
 df_pma = pd.read_excel(path_sp,sheet_name= 'PMA') #Dataframe for PMAs
@@ -429,7 +431,7 @@ df_metrics = ((df_init.join(df_week)).set_index('ITEM')).astype(object) #astype(
 #Mando el dataframe al archivo original para añadir la nueva columna
 df_metrics.to_excel(path_init) 
 
-df_metrics_email = df_metrics[df_metrics.columns[-5:]]
+df_metrics_email = df_metrics[df_metrics.columns[-6:]]
 
 
 #Ahora con ese nuevo archivo actualizado puedo manipular la data como quiera
