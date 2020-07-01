@@ -15,15 +15,7 @@ today_week = datetime.today().isocalendar()[1]
 opp_placards = 0
 
 #Setting Sharpeoint excel lists paths
-path_pma = r'C:/Users/ggalina/Engineering Metrics/PMA.xlsx'
-path_sdocs = r'C:/Users/ggalina/Engineering Metrics/Source Docs.xlsx'
-path_er = r'C:/Users/ggalina/Engineering Metrics/Engineering Requests.xlsx'
-path_alerts = r'C:/Users/ggalina/Engineering Metrics/Alerts.xlsx'
-path_aog = r'C:/Users/ggalina/Engineering Metrics/AOG.xlsx'
-path_ual = r'C:/Users/ggalina/Engineering Metrics/UAL Build Standards.xlsx'
-path_cck = r'C:/Users/ggalina/Engineering Metrics/C Check Data.xlsx'
-path_edocs = r'C:/Users/ggalina/Engineering Metrics/E-Docs.xlsx'
-path_init = r'C:/Users/ggalina/Engineering Metrics/Initial Metrics.xlsx'
+path_sp = r'C:/Users/ggalina/Engineering Metrics/Sharepoint Data.xlsx'
 
 #Refreshing Data Sources (PON TODO EN UN EXCEL EN VARIOS SHEETS, MEJOR ASI!)
 # xlapp = win32com.client.DispatchEx("Excel.Application")
@@ -34,14 +26,14 @@ path_init = r'C:/Users/ggalina/Engineering Metrics/Initial Metrics.xlsx'
 # xlapp.Quit()
 
 #Setting up dataframes
-df_pma = pd.read_excel(path_pma) #Dataframe for PMAs
-df_sdocs = pd.read_excel(path_sdocs) #Dataframe for open source docs
-df_er = pd.read_excel(path_er) #Dataframe for engineering requests
-df_alerts = pd.read_excel(path_alerts) #Dataframe for alerts
-df_aog = pd.read_excel(path_aog) #Dataframe for AOGs
-df_ual = pd.read_excel(path_ual) #Dataframe for UAL Build Standards
-df_edocs = pd.read_excel(path_edocs) #Dataframe for UAL Build Standards
-df_cck = pd.read_excel(path_cck) #Dataframe for CCK
+df_pma = pd.read_excel(path_sp,sheet_name= 'PMA') #Dataframe for PMAs
+df_sdocs = pd.read_excel(path_sp,sheet_name= 'Source Docs') #Dataframe for open source docs
+df_er = pd.read_excel(path_sp,sheet_name= 'Engineering Requests') #Dataframe for engineering requests
+df_alerts = pd.read_excel(path_sp,sheet_name= 'Alerts') #Dataframe for alerts
+df_aog = pd.read_excel(path_sp,sheet_name= 'AOG') #Dataframe for AOGs
+df_ual = pd.read_excel(path_sp,sheet_name= 'UAL Docs') #Dataframe for UAL Build Standards
+df_edocs = pd.read_excel(path_sp,sheet_name= 'EDocs') #Dataframe for UAL Build Standards
+df_cck = pd.read_excel(path_sp,sheet_name= 'CCK Data') #Dataframe for CCK
 
 
 #Setting up AI and STR groups
@@ -108,8 +100,8 @@ alerts_ai = (df_alerts[filt_alerts_ai].shape)[0]
 #C-Check info
 filt_eng = (df_cck['Aircraft'].str.contains('HP')) & (df_cck['Time Initial Request'].dt.year ==int(datetime.today().strftime('%Y')))
 df_cck.dropna(axis = 0,how = 'all', subset = ['Aircraft'], inplace= True)
-c_ck_cases = df_cck[filt_eng].shape[0]
-c_ck_time = 0
+c_ck_cases = df_cck[filt_eng].shape[0] #contar todos los casos
+c_ck_time = round(df_cck[filt_eng]['TiempoEng'].mean(),1)
 
 #AOG info
 df_aog['MOC TO ENG'] = pd.to_datetime(df_aog['MOC TO ENG'])
@@ -441,30 +433,34 @@ df_metrics_email = df_metrics[df_metrics.columns[-5:]]
 
 #Ahora con ese nuevo archivo actualizado puedo manipular la data como quiera
 
-#Setting up email send
-# html_table = df_metrics_email.to_html(col_space = 70,table_id = 'Metrics')
-# css = '''<style>
-# table {text-align: center;}
-# table thead th {text-align: center;}
-# table, th, td { border: 1px solid black;}
-# table {border-collapse: collapse}
-# th, td {padding: 9px}
-# table {font-family: verdana}
-# table {font-size: 12}
-# </style>'''
-# email_table = css + html_table
-# outlook = win32.gencache.EnsureDispatch('Outlook.Application')
-# mail_item = outlook.CreateItem(0)
-# mail_item.To = 'ggalina@copaair.com'
-# body = 'A continuación data compilada de los pendientes del departamento de ingeniería de ATA por área (AI: Aviónica, Sistemas, Interiores y STR: Estructuras y Motores):'+ '<br>' + '<br>'  + email_table
-# mail_item.HTMLBody = (body)
-# mail_item.Send()
-
-
+#Setting up M2 for html
 m2 = {'AMOC 737': amoc, 'EMB': emb, 'MAX': maxl, 'NG':ng, 'SAIB':saib, 'SL737': sl, 'COMP': comp, 'TOTAL':total}
 df_m2 = pd.DataFrame.from_dict(m2)
 df_m2.rename(index = m2_index, inplace= True)
-print(df_m2)
+html_table_m2 = df_m2.to_html(col_space = 70,table_id = 'M2')
+
+# Setting up email send
+html_table = df_metrics_email.to_html(col_space = 70,table_id = 'Metrics')
+css = '''<style>
+table {text-align: center;}
+table thead th {text-align: center;}
+table, th, td { border: 1px solid black;}
+table {border-collapse: collapse}
+th, td {padding: 9px}
+table {font-family: verdana}
+table {font-size: 12}
+</style>'''
+email_table = css + html_table
+outlook = win32.gencache.EnsureDispatch('Outlook.Application')
+mail_item = outlook.CreateItem(0)
+mail_item.To = 'ggalina@copaair.com'
+mail_item.Subject = 'Engineering Metrics - Open Items'
+body = 'A continuación data compilada de los pendientes del departamento de ingeniería de ATA por área (AI: Aviónica, Sistemas, Interiores y STR: Estructuras y Motores):'+ '<br>' + '<br>'  + email_table + '<br>' + '<br>' + html_table_m2
+mail_item.HTMLBody = (body)
+mail_item.Send()
+
+
+
 
 #Source doc sale beby orque usa los de JA, pendiente que se 
 #reasigne
